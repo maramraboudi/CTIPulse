@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}CVE not found - CTI-Pulse{% endblock %}
+{% block content %}
+<section class="empty-state">
+  <h1>CVE not in the knowledge base</h1>
+  <p>{{ cve_id }} has not been collected. Run the collection pipeline or add the identifier.</p>
+  <a class="button" href="/">Back to dashboard</a>
+</section>
+{% endblock %}

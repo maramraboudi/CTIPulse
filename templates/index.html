@@ -1,0 +1,71 @@
+<!--
+THESIS: Make the intelligence signal itself the primary artifact, with dense evidence and familiar analyst affordances.
+OWN-WORLD: Charcoal top bar, pale blue-gray work surface, cyan active accents, and disciplined high-density data typography.
+STORY: An analyst sees exposure, searches by identifier, and enters an evidence-led investigation.
+FIRST VIEWPORT: Header, four compact metrics, a left-aligned filter rail, and one prioritized intelligence ledger.
+FORM: Operate dashboard with restrained density and standard table/navigation grammar.
+-->
+{% extends "base.html" %}
+{% block title %}Dashboard - CTI-Pulse{% endblock %}
+{% block content %}
+<section class="workspace">
+  <aside class="filters" aria-label="Threat filters">
+    <h1>Threat watch</h1>
+    <form method="get" action="/">
+      <label for="q">Search intelligence</label>
+      <input id="q" name="q" value="{{ q }}" placeholder="CVE or keyword">
+      <label for="priority">Priority</label>
+      <select id="priority" name="priority">
+        <option value="">All priorities</option>
+        {% for option in ["Critical","High","Medium","Low"] %}
+        <option value="{{ option }}" {% if priority == option %}selected{% endif %}>{{ option }}</option>
+        {% endfor %}
+      </select>
+      <label class="check"><input type="checkbox" name="kev" value="true" {% if kev %}checked{% endif %}> CISA KEV only</label>
+      <button class="button" type="submit">Apply filters</button>
+      <a class="text-link" href="/">Clear filters</a>
+    </form>
+  </aside>
+
+  <div class="intelligence">
+    <section class="metrics" aria-label="Knowledge base summary">
+      <article><strong>{{ summary["total"] or 0 }}</strong><span>Tracked CVEs</span></article>
+      <article><strong>{{ summary["critical"] or 0 }}</strong><span>Critical</span></article>
+      <article><strong>{{ summary["kev"] or 0 }}</strong><span>Known exploited</span></article>
+      <article><strong>{{ summary["pocs"] or 0 }}</strong><span>PoC evidence</span></article>
+    </section>
+
+    <section class="ledger" aria-labelledby="ledger-title">
+      <div class="ledger-heading">
+        <h2 id="ledger-title">Priority ledger</h2>
+        <span>{{ cves|length }} records</span>
+      </div>
+      {% if cves %}
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>CVE</th><th>CVSS</th><th>EPSS</th><th>KEV</th><th>PoC</th><th>Risk</th><th>Priority</th></tr></thead>
+          <tbody>
+          {% for cve in cves %}
+            <tr>
+              <td><a class="cve-link" href="/cve/{{ cve['cve_id'] }}">{{ cve["cve_id"] }}</a></td>
+              <td>{{ "%.1f"|format(cve["cvss"]) }}</td>
+              <td>{{ "%.3f"|format(cve["epss"]) }}</td>
+              <td>{% if cve["in_kev"] %}<span class="signal yes">Yes</span>{% else %}<span class="signal">No</span>{% endif %}</td>
+              <td>{{ cve["poc_count"] }}</td>
+              <td><strong>{{ "%.1f"|format(cve["risk_score"]) }}</strong></td>
+              <td><span class="priority {{ cve['priority']|lower }}">{{ cve["priority"] }}</span></td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div class="empty-state">
+        <h3>No intelligence matches</h3>
+        <p>Run <code>python -m app.cli collect</code> or change the filters.</p>
+      </div>
+      {% endif %}
+    </section>
+  </div>
+</section>
+{% endblock %}
