@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Reports - CTI-Pulse{% endblock %}
+{% block content %}
+<div class="detail">
+  <header class="detail-header">
+    <div><p class="source-label">Intelligence delivery</p><h1>Weekly reports</h1></div>
+  </header>
+  <section class="record-panel">
+    {% if reports %}
+    <ul class="reference-list">
+      {% for report in reports %}
+      <li><a href="/reports/{{ report['name'] }}">{{ report["name"] }}</a><span>PDF</span></li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p>No reports yet. Run <code>python -m app.cli report</code> or use <code>POST /api/v1/reports/weekly</code>.</p>
+    {% endif %}
+  </section>
+</div>
+{% endblock %}

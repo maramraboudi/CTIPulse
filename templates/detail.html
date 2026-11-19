@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block title %}{{ cve["cve_id"] }} - CTI-Pulse{% endblock %}
+{% block content %}
+<div class="detail">
+  <a class="back-link" href="/">← Intelligence ledger</a>
+  <header class="detail-header">
+    <div>
+      <p class="source-label">Vulnerability record</p>
+      <h1>{{ cve["cve_id"] }}</h1>
+    </div>
+    <div class="risk-badge">
+      <strong>{{ "%.1f"|format(explanation["score"]) }}</strong>
+      <span>{{ explanation["priority"] }} priority</span>
+    </div>
+  </header>
+
+  <div class="detail-grid">
+    <section class="record-panel">
+      <h2>Intelligence summary</h2>
+      <p>{{ cve["description"] or "No NVD description available." }}</p>
+      <dl class="facts">
+        <div><dt>CVSS</dt><dd>{{ "%.1f"|format(cve["cvss"]) }}</dd></div>
+        <div><dt>EPSS</dt><dd>{{ "%.3f"|format(cve["epss"]) }}</dd></div>
+        <div><dt>CISA KEV</dt><dd>{{ "Known exploited" if cve["in_kev"] else "Not listed" }}</dd></div>
+        <div><dt>PoC repositories</dt><dd>{{ cve["poc_count"] }}</dd></div>
+      </dl>
+    </section>
+
+    <section class="evidence-panel">
+      <h2>Why this score?</h2>
+      <div class="score-breakdown">
+        {% for signal in explanation["signals"] %}
+        <div class="score-row">
+          <span><strong>{{ signal["name"] }}</strong><small>{{ signal["weight"] }} weight</small></span>
+          <b>{{ signal["value"] }}</b>
+        </div>
+        {% endfor %}
+      </div>
+      <p class="limitation">A public PoC demonstrates exploit availability or research; it does not prove exploitation in your environment.</p>
+    </section>
+
+    <section class="record-panel">
+      <h2>MITRE ATT&CK mappings</h2>
+      {% if mappings %}
+      <div class="mapping-list">
+        {% for mapping in mappings %}
+        <article>
+          <span class="technique-id">{{ mapping["technique_id"] }}</span>
+          <div><strong>{{ mapping["technique_name"] }}</strong><p>{{ mapping["evidence"] }}</p></div>
+          <span class="confidence">{{ mapping["confidence"] }}</span>
+        </article>
+        {% endfor %}
+      </div>
+      {% else %}
+      <p>No curated mapping is available. Do not infer technique use from the CVE alone.</p>
+      {% endif %}
+    </section>
+
+    <section class="record-panel">
+      <h2>Public PoC references</h2>
+      {% if pocs %}
+      <ul class="reference-list">
+        {% for poc in pocs %}
+        <li><a href="{{ poc['html_url'] }}" target="_blank" rel="noopener">{{ poc["repository"] }}</a><span>{{ poc["stars"] }} stars</span></li>
+        {% endfor %}
+      </ul>
+      {% else %}
+      <p>No PoC repository was discovered during the latest collection.</p>
+      {% endif %}
+    </section>
+  </div>
+</div>
+{% endblock %}
