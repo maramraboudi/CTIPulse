@@ -91,6 +91,14 @@ GitHub API searches are also influenced by authentication and rate limits. The d
 python -m pytest -q
 ```
 
+## Build guide
+
+The detailed code walkthrough is available as [`docs/CTI-Pulse-Build-Walkthrough.pdf`](docs/CTI-Pulse-Build-Walkthrough.pdf), with its editable source in [`docs/BUILD_WALKTHROUGH.md`](docs/BUILD_WALKTHROUGH.md). Regenerate the PDF with:
+
+```powershell
+python scripts/generate_build_guide.py
+```
+
 ## Repository structure
 
 ```text
@@ -107,6 +115,7 @@ static/styles.css     Analyst dashboard styles
 templates/            Jinja2 dashboard templates
 tests/                Unit tests
 docs/                 Technical and interview documentation
+scripts/              Documentation/PDF generation tools
 ```
 
 ## Security and interpretation
